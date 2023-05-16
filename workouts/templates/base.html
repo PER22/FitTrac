@@ -19,8 +19,17 @@
         </ul>
         <ul class="right">
           <li><a href="{% url 'about' %}">About FitTrac</a></li>
-          <li><a href="{% url 'workout_create' %}">Add a Workout</a></li>
-          <li><a href="{% url 'workout_list' %}">View All My Workouts</a></li>
+          {% if user.is_authenticated %}
+            <li><a href="{% url 'exercise_create' %}">Create an Exercise</a></li>
+            <li><a href="{% url 'exercise_list' %}">My Exercises</a></li>
+            <li><a href="{% url 'workout_create' %}">Create a Workout</a></li>
+            <li><a href="{% url 'workout_list' %}">My Workouts</a></li>
+            {% comment %} <li><a href="{% url '' %}">Profile</a></li> {% endcomment %}
+            <li><a href="{% url 'logout' %}">Log Out</a></li>
+          {% else %}
+            <li><a href="{% url 'signup' %}">Sign Up</a></li>
+            <li><a href="{% url 'login' %}">Log In</a></li>
+          {% endif %}
         </ul>
       </div>
     </nav>
