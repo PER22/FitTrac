@@ -8,16 +8,59 @@
   <h1>Add Workout</h1>
 {% endif %}
 
-
-<!-- Leaving the action empty makes the form post to the same url used to display it -->
+<!-- Main form -->
 <form action="" method="POST">
-  <!-- Django requires the following for security purposes -->
   {% csrf_token %}
   <table>
-    <!-- Render the inputs inside of <tr>s & <td>s -->
     {{ form.as_table }}
   </table>
-  <input type="submit" value="Submit!" class="btn">
+  <input type="submit" value="Save">
 </form>
 
+<!-- Sets -->
+<h3>Sets</h3>
+{% for set in sets %}
+  <div>{{ set.exercise.name }}</div>
+  <hr>
+{% endfor %}
+
+<!-- Create Set form -->
+<h3>Create Set</h3>
+<form method="POST" id="addSetForm">
+  {% csrf_token %}
+  <table>
+    {{ set_form.exercise.label_tag }}
+    <select id="exerciseSelect" name="{{ set_form.exercise.html_name }}">
+      {% for exercise in set_form.exercise.field.queryset %}
+        <option value="{{ exercise.pk }}">{{ exercise.name }}</option>
+      {% endfor %}
+    </select>
+    {{ set_form.duration.label_tag }}
+    {{ set_form.duration }}
+    {{ set_form.weight.label_tag }}
+    {{ set_form.weight }}
+    {{ set_form.resistance.label_tag }}
+    {{ set_form.resistance }}
+    {{ set_form.distance.label_tag }}
+    {{ set_form.distance }}
+    {{ set_form.time.label_tag }}
+    {{ set_form.time }}
+    {{ set_form.reps.label_tag }}
+    {{ set_form.reps }}
+  </table>
+  <input type="submit" value="Save">
+</form>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var exerciseSelect = document.getElementById('exerciseSelect');
+    var addSetForm = document.getElementById('addSetForm');
+
+    exerciseSelect.addEventListener('change', function() {
+      var selectedExercise = exerciseSelect.value;
+      var actionURL = '/workouts/{{ object.pk }}/exercises/' + selectedExercise + '/add_set/';
+      addSetForm.action = actionURL;
+    });
+  });
+</script>
 {% endblock %}
