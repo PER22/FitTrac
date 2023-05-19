@@ -1,9 +1,11 @@
 from django.db import models
 from django.urls import reverse
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, AbstractUser
+from django.contrib.auth.models import AbstractUser
+
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.core.exceptions import ValidationError
-from django.urls import reverse
+
 
 WORKOUT_GEAR = (
     ("N", "no equipment"),
@@ -28,6 +30,7 @@ TRAINING_TYPES = (
 )
 
 
+
 class Exercise(models.Model):
     name = models.CharField(max_length=50, default="Unnamed Exercise")
     equipment = models.CharField(
@@ -37,6 +40,7 @@ class Exercise(models.Model):
         max_length=1, choices=TRAINING_TYPES, default=TRAINING_TYPES[0][0]
     )
     description = models.TextField(max_length=250, default="No description provided")
+    
     def __str__(self):
         builtString = self.name
         if self.equipment:
@@ -49,7 +53,13 @@ class Exercise(models.Model):
             builtString += f"."           
         return builtString
     def get_absolute_url(self):
-        return reverse('exercise_detail', kwargs={'exercise_pk': self.pk})
+        return reverse('exercise_detail', kwargs={'pk': self.pk})
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        print(self.profiles.all())
+        for profile in self.profiles.all():
+            profile.exercises.add(self)
+
 
 class Workout(models.Model):
     name = models.CharField(max_length=100, default="")
@@ -61,7 +71,11 @@ class Workout(models.Model):
         return f"{self.name} ({self.id})"
 
     def get_absolute_url(self):
-        return reverse("workout_detail", kwargs={"workout_pk": self.id})
+        return reverse("workout_detail", kwargs={"pk": self.pk})
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        for profile in self.profiles.all():
+            profile.workouts.add(self)
 
 
 class Set(models.Model):
@@ -99,31 +113,18 @@ class Set(models.Model):
 
 
 class Profile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profiles")
     profile_pic_url = models.CharField(max_length=200, null=True, blank=True)
     bio = models.CharField(max_length=200, null=True, blank=True)
-    workouts = models.ManyToManyField("Workout", related_name="profile", blank=True)
-    exercises = models.ManyToManyField("Exercise", related_name="profile", blank=True)
-
+    workouts = models.ManyToManyField(Workout, related_name="profiles", blank=True)
+    exercises = models.ManyToManyField(Exercise, related_name="profiles", blank=True)
     def __str__(self):
-        return f"{self.user.username} Profile"
+        return f"{self.user.username}'s profile"
     def get_absolute_url(self):
-        return reverse('profile_detail', kwargs={'profile_pk': self.pk})
+        return reverse('profile_detail', kwargs={'pk': self.pk})
 
+def create_profile(sender, instance, created, **kwargs):
+    if created and not hasattr(instance, 'profile'):
+        Profile.objects.create(user=instance)
 
-class WorkoutExercise(models.Model):
-    workout = models.ForeignKey(Workout, on_delete=models.CASCADE)
-    sets = models.ManyToManyField(Set, blank=True)
-    rest_time = models.IntegerField(default=60)
-    notes = models.TextField(max_length=250, default="")
-    
-    def __str__(self):
-        return f"Sets in ({self.workout})"
-
-
-class ProfileWorkout(models.Model):
-    profile = models.ForeignKey(Profile, on_delete=models.CASCADE)
-    workout = models.ForeignKey(Workout, on_delete=models.CASCADE)
-    
-    class Meta:
-        unique_together = ('profile', 'workout')
+models.signals.post_save.connect(create_profile, sender=User)

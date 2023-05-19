@@ -9,7 +9,7 @@
     <p>Type: {{ exercise.get_type_display }}</p>
     <p>Description: {{ exercise.description|linebreaks }}</p>
     
-      <p>Difficulty: {{ exercise.difficulty_rating }}</p>
+
   </div>
   <div class="card-action">
     <a href="{% url 'exercise_update' exercise.id %}">Edit</a>

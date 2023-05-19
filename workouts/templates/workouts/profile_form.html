@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% if object %}
+  <h1>Edit Your<span class="teal-text">{{ object.name }}</span></h1>
+{% else %}
+  <h1>Your Profile</h1>
+{% endif %}
+{% if object.profile_pic_url %}
+    <p><strong>Profile Picture:</strong></p>
+    <img src="{{ object.profile_pic_url }}" alt="Profile Picture">
+{% endif %}
+<form action="{% url 'add_photo' profile.id %}" enctype="multipart/form-data" method="POST">
+    {% csrf_token %}
+    <input type="file" name="photo-file">
+    <br><br>
+    <input type="submit" value="Upload Photo">
+  </form>
+
+<!-- Leaving the action empty makes the form post to the same url used to display it -->
+<form action="" method="POST">
+  <!-- Django requires the following for security purposes -->
+  {% csrf_token %}
+  <table>
+    <!-- Render the inputs inside of <tr>s & <td>s -->
+    {{ form.as_table }}
+  </table>
+  <input type="submit" value="Submit!" class="btn">
+</form>
+
+{% endblock %}

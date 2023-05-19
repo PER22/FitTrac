@@ -9,6 +9,12 @@
     <p>Description: {{ workout.description|linebreaks }}</p>
       <p>Difficulty: {{ workout.difficulty_rating }}</p>
   </div>
+  <h3>Sets</h3>
+{% for set in sets %}
+  <div>{{set.exercise.name}}</div>
+  <hr>
+{% endfor %}
+  
   <div class="card-action">
     <a href="{% url 'workout_update' workout.id %}">Edit</a>
     <a href="{% url 'workout_delete' workout.id %}">Delete</a>

@@ -19,11 +19,13 @@
         <ul class="right">
           <li><a href="{% url 'about' %}">About FitTrac</a></li>
           {% if user.is_authenticated %}
+              {% if user.is_authenticated and user.profiles.pk %}
+              <li><a href="{% url 'profile_detail' pk=user.profiles.pk %}">My Profile</a></li>
+          {% endif %} 
             <li><a href="{% url 'exercise_create' %}">Create an Exercise</a></li>
             <li><a href="{% url 'exercise_list' %}">My Exercises</a></li>
             <li><a href="{% url 'workout_create' %}">Create a Workout</a></li>
             <li><a href="{% url 'workout_list' %}">My Workouts</a></li>
-            {% comment %} <li><a href="{% url '' %}">Profile</a></li> {% endcomment %}
             <li><a href="{% url 'logout' %}">Log Out</a></li>
           {% else %}
             <li><a href="{% url 'signup' %}">Sign Up</a></li>

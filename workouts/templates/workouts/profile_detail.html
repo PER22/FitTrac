@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h1>Profile Detail</h1>
+
+<p><strong>@</strong> {{ object.user.username }}</p>
+{% if object.profile_pic_url %}
+    <p><strong>Profile Picture:</strong></p>
+    <img src="{{ object.profile_pic_url }}" alt="Profile Picture">
+{% endif %}
+<p><strong>Bio:</strong> {{ object.bio }}</p>
+<p><strong>Workouts:</strong></p>
+<ul>
+    {% for workout in object.workouts.all %}
+        <li>{{ workout }}</li>
+        <hr>
+    {% endfor %}
+</ul>
+
+<p><strong>Exercises:</strong></p>
+<ul>
+    {% for exercise in object.exercises.all %}
+        <li>{{ exercise }}</li>
+    {% endfor %}
+</ul>
+<a href="{% url 'profile_update' object.pk %}">Edit Profile</a>
+{% endblock %}

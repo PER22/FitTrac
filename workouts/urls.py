@@ -25,11 +25,16 @@ urlpatterns = [
   path('exercises/<int:pk>/delete/', views.ExerciseDelete.as_view(), name='exercise_delete'),
   
   # Linking Exercises to a Set in a Workout
-  path('workouts/<int:pk>/exercises/<int:exercise_pk>/add_set/', views.add_set, name='add_set'),
+  path('workouts/<int:workout_pk>/exercises/<int:exercise_pk>/add_set/', views.add_set, name='add_set'),
 
-  
+  #Profile management
+  path('profiles/<int:pk>/', views.ProfileDetail.as_view(), name='profile_detail'),
+  path('profiles/create/', views.ProfileCreate.as_view(), name='profile_create'),
+  path('profiles/<int:pk>/update/', views.ProfileUpdate.as_view(), name='profile_update'),
+  path('profiles/<int:pk>/delete/', views.ProfileDelete.as_view(), name='profile_delete'),
   
   path('accounts/signup/', views.signup, name='signup'),
   path('login/', auth_views.LoginView.as_view(), name='login'),
   path('logout/', auth_views.LogoutView.as_view(), name='logout'),
-]
+  path('profiles/<int:pk>/add_photo/', views.add_photo, name='add_photo'),
+]  
